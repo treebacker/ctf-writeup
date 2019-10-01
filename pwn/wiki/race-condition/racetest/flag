@@ -1,0 +1,2 @@
+flag{race_condition_succeed!}
+flag{race_condition_flag}
