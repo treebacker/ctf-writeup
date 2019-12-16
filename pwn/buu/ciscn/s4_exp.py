@@ -67,5 +67,5 @@ def exploit():
 
 if __name__ == '__main__':
 	#p = process('./ciscn_s_4')
-	p = remote('node3.buuoj.cn', 28162)
+	p = remote('node3.buuoj.cn', 26019)
 	exploit()
